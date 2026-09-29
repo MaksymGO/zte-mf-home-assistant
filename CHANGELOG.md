@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.0](https://github.com/MaksymGO/zte-mf-home-assistant/compare/v0.4.0...v0.5.0) (2026-09-29)
+
+
+### Features
+
+* add modem reboot button ([90511f8](https://github.com/MaksymGO/zte-mf-home-assistant/commit/90511f89e1850d48f2b2d632cb4fcca67f3088cb))
+* add monthly ZTE modem sensors ([604eca5](https://github.com/MaksymGO/zte-mf-home-assistant/commit/604eca53dcbcb2f933516a25da71e616e9ba82fd))
+* Add new sensors ([e8d58df](https://github.com/MaksymGO/zte-mf-home-assistant/commit/e8d58dfcec3f75ccbb8690be5b87bf70702ec458))
+* expose roaming setting as binary sensor ([5c23537](https://github.com/MaksymGO/zte-mf-home-assistant/commit/5c2353747e5751a431d9d457752fc8e5ab754dba))
+
 ## [0.4.0](https://github.com/MaksymGO/zte-mf-home-assistant/compare/v0.3.0...v0.4.0) (2026-09-29)
 
 
