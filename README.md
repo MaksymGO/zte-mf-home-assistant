@@ -35,6 +35,10 @@ The integration reads telemetry; its only POST operation is logging in to the we
 ## Compatibility
 
 Requires Home Assistant **2025.1+** and network access from HA to the modem.
+The bundled icon and logo in `custom_components/zte_mf/brand/` are displayed by
+Home Assistant **2026.3+**. Restart Home Assistant after installing or updating
+the integration to load its local brand images.
+
 Goform API availability and the firmware version were verified on the device at
 `192.168.0.1`. Commands and the login procedure were checked against the JavaScript
 in the device's web interface.
