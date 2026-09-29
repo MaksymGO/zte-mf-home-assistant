@@ -19,6 +19,9 @@ async def modem():
         "bad_json": False,
         "missing_status": False,
         "http_error": False,
+        "ppp_status": "ppp_connected",
+        "radio_off": "1",
+        "m_ssid_enable": "0",
     }
 
     async def get(request):
@@ -29,6 +32,14 @@ async def modem():
         commands = request.query["cmd"]
         if commands == "wa_inner_version":
             return web.json_response({"wa_inner_version": VERSION})
+        if commands == "wa_inner_version,cr_version":
+            return web.json_response({"wa_inner_version": VERSION, "cr_version": ""})
+        if commands == "RD":
+            return web.json_response({"RD": "random-data"})
+        if commands == "RadioOff":
+            return web.json_response({"RadioOff": state["radio_off"]})
+        if commands == "m_ssid_enable":
+            return web.json_response({"m_ssid_enable": state["m_ssid_enable"]})
         logged_in = request.cookies.get("stok") == "test-session"
         if state["expired"] and "," in commands:
             state["expired"] = False
@@ -42,7 +53,7 @@ async def modem():
                 "loginfo": "ok",
                 "wa_inner_version": VERSION,
                 "imei": "123456789012345",
-                "ppp_status": "ppp_connected",
+                "ppp_status": state["ppp_status"],
                 "battery_vol_percent": "75",
             }
         )
@@ -51,10 +62,19 @@ async def modem():
         data = dict(await request.post())
         state["posts"].append(data)
         assert request.headers["Referer"].endswith("/index.html")
-        assert data["goformId"] == "LOGIN"
-        if state["bad_auth"]:
+        if data["goformId"] == "LOGIN" and state["bad_auth"]:
             return web.json_response({"result": "3"})
         result = web.json_response({"result": "0"})
+        result.set_cookie("stok", "test-session")
+        if data["goformId"] == "DISCONNECT_NETWORK":
+            state["ppp_status"] = "ppp_disconnected"
+            result = web.json_response({"result": "success"})
+        elif data["goformId"] == "CONNECT_NETWORK":
+            state["ppp_status"] = "ppp_connected"
+            result = web.json_response({"result": "success"})
+        elif data["goformId"] == "SET_WIFI_INFO":
+            state["radio_off"] = "0" if data["wifiEnabled"] == "1" else "1"
+            result = web.json_response({"result": "success"})
         result.set_cookie("stok", "test-session")
         return result
 
@@ -81,6 +101,50 @@ async def test_login_cookie_reuse_and_expiry(modem):
     state["expired"] = True
     await client.async_update()
     assert len(state["posts"]) == 2
+
+
+@pytest.mark.parametrize(
+    "enabled,command,status",
+    [(True, "CONNECT_NETWORK", "ppp_connected"), (False, "DISCONNECT_NETWORK", "ppp_disconnected")],
+)
+async def test_lte_switch_uses_firmware_ad(modem, enabled, command, status):
+    import hashlib
+
+    client, state = modem
+    await client.async_update()
+    assert (await client.async_set_lte(enabled))["ppp_status"] == status
+    post = next(item for item in state["posts"] if item["goformId"] != "LOGIN")
+    inner_hash = hashlib.md5(VERSION.encode()).hexdigest()
+    expected_ad = hashlib.md5(f"{inner_hash}random-data".encode()).hexdigest()
+    assert post == {
+        "isTest": "false",
+        "notCallback": "true",
+        "goformId": command,
+        "AD": expected_ad,
+    }
+
+
+@pytest.mark.parametrize("enabled,secondary_enabled", [(True, "0"), (True, "1"), (False, "0")])
+async def test_wifi_switch_uses_firmware_ad(modem, enabled, secondary_enabled):
+    import hashlib
+
+    client, state = modem
+    state["m_ssid_enable"] = secondary_enabled
+    await client.async_update()
+    status = await client.async_set_wifi(enabled)
+    assert status["RadioOff"] == ("0" if enabled else "1")
+    post = next(item for item in state["posts"] if item["goformId"] == "SET_WIFI_INFO")
+    inner_hash = hashlib.md5(VERSION.encode()).hexdigest()
+    expected_ad = hashlib.md5(f"{inner_hash}random-data".encode()).hexdigest()
+    expected = {
+        "isTest": "false",
+        "goformId": "SET_WIFI_INFO",
+        "wifiEnabled": "1" if enabled else "0",
+        "AD": expected_ad,
+    }
+    if enabled:
+        expected["m_ssid_enable"] = secondary_enabled
+    assert post == expected
 
 
 async def test_bad_password_only_attempted_once(modem):
