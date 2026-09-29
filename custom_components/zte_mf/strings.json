@@ -7,6 +7,15 @@
       },
       "wifi_connected_devices": {
         "name": "Connected Wi-Fi devices"
+      },
+      "modem_state": {
+        "name": "Modem state"
+      },
+      "monthly_received": {
+        "name": "Monthly received"
+      },
+      "monthly_sent": {
+        "name": "Monthly sent"
       }
     },
     "switch": {

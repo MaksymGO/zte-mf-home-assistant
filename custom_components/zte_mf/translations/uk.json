@@ -7,6 +7,15 @@
       },
       "wifi_connected_devices": {
         "name": "Пристрої, підключені до Wi-Fi"
+      },
+      "modem_state": {
+        "name": "Стан модема"
+      },
+      "monthly_received": {
+        "name": "Отримано за місяць"
+      },
+      "monthly_sent": {
+        "name": "Надіслано за місяць"
       }
     },
     "switch": {

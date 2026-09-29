@@ -45,6 +45,8 @@ class FirmwareProfile:
         "realtime_tx_thrpt",
         "realtime_rx_thrpt",
         "realtime_time",
+        "monthly_rx_bytes",
+        "monthly_tx_bytes",
     )
 
 
