@@ -1,6 +1,22 @@
 {
   "title": "ZTE MF",
   "entity": {
+    "sensor": {
+      "network_name": {
+        "name": "Network Name (SSID)"
+      },
+      "wifi_connected_devices": {
+        "name": "Connected Wi-Fi devices"
+      }
+    },
+    "switch": {
+      "wifi_switch": {
+        "name": "Wi-Fi"
+      },
+      "lte_switch": {
+        "name": "LTE"
+      }
+    },
     "button": {
       "shutdown": {
         "name": "Shutdown"

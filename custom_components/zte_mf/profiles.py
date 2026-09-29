@@ -13,15 +13,24 @@ class FirmwareProfile:
     set_path: str = "/goform/goform_set_cmd_process"
     login_command: str = "LOGIN"
     shutdown_command: str = "SHUTDOWN_DEVICE"
+    wifi_switch_command: str = "SET_WIFI_INFO"
+    lte_connect_command: str = "CONNECT_NETWORK"
+    lte_disconnect_command: str = "DISCONNECT_NETWORK"
     password_encoding: str = "base64"
     commands: tuple[str, ...] = (
         "loginfo",
         "wa_inner_version",
         "hardware_version",
         "imei",
+        "imsi",
         "mac_address",
         "network_type",
         "network_provider",
+        "SSID1",
+        "RadioOff",
+        "station_list",
+        "modem_main_state",
+        "wan_ipaddr",
         "signalbar",
         "ppp_status",
         "battery_vol_percent",

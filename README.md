@@ -24,13 +24,18 @@ before using the **Add integration to my HA** button.
 | Entities | Measurements |
 | --- | --- |
 | Network | Operator, network type, SIM status, mobile connection, roaming |
-| Signal | Signal bars, RSSI, RSCP, LTE RSRP |
+| Wi-Fi | Network Name (SSID), connected device count, on/off switch |
+| Mobile network | LTE data on/off switch |
 | Power | Battery level, charging status |
 | Traffic | Bytes sent/received per session, transfer rates in B/s, connection duration |
 
+IMEI, IMSI, signal readings, and WAN IP are available in downloaded integration
+diagnostics. Sensitive values, including identifiers, IP address, SSID, modem address,
+and password, are redacted before diagnostics are exported.
+
 Missing or invalid readings become `unknown`; entities become `unavailable` when
 communication fails. Traffic counters may reset after reconnection.
-RSSI/RSCP/RSRP availability depends on the network type and firmware.
+Signal readings in diagnostics depend on the network type and firmware.
 The integration reads telemetry and can send a shutdown command. It also posts the
 credentials when logging in to the modem web interface.
 
