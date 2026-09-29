@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1](https://github.com/MaksymGO/zte-mf-home-assistant/compare/v0.5.0...v0.5.1) (2026-09-29)
+
+
+### Bug Fixes
+
+* authenticate Wi-Fi switch requests ([be21929](https://github.com/MaksymGO/zte-mf-home-assistant/commit/be2192928ac85ebae4a43be99234ad47466d3641))
+* authenticate Wi-Fi switch requests ([054fd76](https://github.com/MaksymGO/zte-mf-home-assistant/commit/054fd764a8af68efa4afdd7883bf80043a2551cc))
+
 ## [0.5.0](https://github.com/MaksymGO/zte-mf-home-assistant/compare/v0.4.0...v0.5.0) (2026-09-29)
 
 
