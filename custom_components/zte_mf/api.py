@@ -190,7 +190,9 @@ class ZteClient:
         async with self._lock:
             await self._async_ensure_login()
             assert self.profile is not None
-            command = self.profile.lte_connect_command if enabled else self.profile.lte_disconnect_command
+            command = (
+                self.profile.lte_connect_command if enabled else self.profile.lte_disconnect_command
+            )
             result = await self._request(
                 "POST", self.profile.set_path, {"isTest": "false", "goformId": command}
             )
