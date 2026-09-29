@@ -1,4 +1,4 @@
-"""Asynchronous, read-only Goform telemetry client (apart from login)."""
+"""Asynchronous Goform telemetry and control client."""
 
 import asyncio
 import base64
@@ -145,6 +145,22 @@ class ZteClient:
             ):
                 raise CannotConnect
             return data
+
+    async def async_shutdown(self) -> None:
+        """Request the same shutdown action as the modem's web interface."""
+        async with self._lock:
+            try:
+                status = await self._get(("loginfo",))
+            except InvalidAuth:
+                status = {}
+            if status.get("loginfo") != "ok":
+                await self._login()
+            assert self.profile is not None
+            await self._request(
+                "POST",
+                self.profile.set_path,
+                {"isTest": "false", "goformId": self.profile.shutdown_command},
+            )
 
 
 def device_id(data: dict) -> str | None:

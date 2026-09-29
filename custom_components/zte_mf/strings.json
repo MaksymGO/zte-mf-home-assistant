@@ -1,5 +1,12 @@
 {
   "title": "ZTE MF",
+  "entity": {
+    "button": {
+      "shutdown": {
+        "name": "Shutdown"
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {

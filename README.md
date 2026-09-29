@@ -18,6 +18,7 @@ before using the **Add integration to my HA** button.
 - Separate cookie sessions for each modem, with recovery after session expiration.
 - Poll every 30 seconds by default, configurable from 10 to 3600 seconds.
 - Stable device identity based on IMEI or MAC, independent of the IP address or SIM.
+- A modem **Shutdown** button that uses the same command as the web interface.
 - English and Ukrainian configuration forms.
 
 | Entities | Measurements |
@@ -30,7 +31,8 @@ before using the **Add integration to my HA** button.
 Missing or invalid readings become `unknown`; entities become `unavailable` when
 communication fails. Traffic counters may reset after reconnection.
 RSSI/RSCP/RSRP availability depends on the network type and firmware.
-The integration reads telemetry; its only POST operation is logging in to the web interface.
+The integration reads telemetry and can send a shutdown command. It also posts the
+credentials when logging in to the modem web interface.
 
 ## Compatibility
 
