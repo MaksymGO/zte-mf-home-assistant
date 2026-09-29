@@ -1,0 +1,60 @@
+{
+  "title": "ZTE MF",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect ZTE modem",
+        "description": "Enter the web interface password. When editing, leave it blank to keep the saved password. Automatic firmware selection requires a known version.",
+        "data": {
+          "host": "Modem address",
+          "model": "Model",
+          "firmware": "Firmware profile",
+          "password": "Password"
+        }
+      },
+      "reconfigure": {
+        "title": "Connect ZTE modem",
+        "description": "Enter the web interface password. When editing, leave it blank to keep the saved password. Automatic firmware selection requires a known version.",
+        "data": {
+          "host": "Modem address",
+          "model": "Model",
+          "firmware": "Firmware profile",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Connect ZTE modem",
+        "description": "Enter the web interface password. When editing, leave it blank to keep the saved password. Automatic firmware selection requires a known version.",
+        "data": {
+          "host": "Modem address",
+          "model": "Model",
+          "firmware": "Firmware profile",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot read modem status. Check the address and network connection.",
+      "invalid_auth": "Login failed. Check the modem password; if locked, wait before trying again.",
+      "invalid_host": "Enter a hostname or IP address, optionally with http:// or https:// and a port.",
+      "unsupported_firmware": "No matching model/firmware profile. Select a supported profile or request support.",
+      "missing_identity": "The modem did not return an IMEI or MAC address."
+    },
+    "abort": {
+      "already_configured": "This modem is already configured.",
+      "wrong_device": "This is a different modem. Add it as a new integration.",
+      "reauth_successful": "Authentication updated.",
+      "reconfigure_successful": "Configuration updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling",
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        }
+      }
+    }
+  }
+}

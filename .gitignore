@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local integration test environments
+.venv-ha/
+.tools/
+.uv-cache/
+.uv-python/
