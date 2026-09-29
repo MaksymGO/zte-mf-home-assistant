@@ -14,7 +14,9 @@ SWITCHES = (
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up controllable modem switches."""
-    async_add_entities(ZteSwitch(entry.runtime_data, entry, description) for description in SWITCHES)
+    async_add_entities(
+        ZteSwitch(entry.runtime_data, entry, description) for description in SWITCHES
+    )
 
 
 class ZteSwitch(ZteEntity, SwitchEntity):

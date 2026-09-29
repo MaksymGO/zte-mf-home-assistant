@@ -33,9 +33,7 @@ SENSORS = (
     ZteSensorDescription(key="network_type", name="Network type"),
     ZteSensorDescription(key="network_provider", name="Network operator"),
     ZteSensorDescription(key="pin_status", name="SIM status"),
-    ZteSensorDescription(
-        key="SSID1", translation_key="network_name", icon="mdi:wifi"
-    ),
+    ZteSensorDescription(key="SSID1", translation_key="network_name", icon="mdi:wifi"),
     ZteSensorDescription(
         key="wifi_connected_devices_count",
         translation_key="wifi_connected_devices",

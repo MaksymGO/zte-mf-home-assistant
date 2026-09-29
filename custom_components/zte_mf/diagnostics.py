@@ -9,9 +9,7 @@ from . import ZteConfigEntry
 TO_REDACT = {CONF_HOST, CONF_PASSWORD, "imei", "imsi", "wan_ipaddr", "SSID1"}
 
 
-async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant, entry: ZteConfigEntry
-) -> dict:
+async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: ZteConfigEntry) -> dict:
     """Expose requested radio and network details in downloaded diagnostics."""
     data = entry.runtime_data.data
     return async_redact_data(
