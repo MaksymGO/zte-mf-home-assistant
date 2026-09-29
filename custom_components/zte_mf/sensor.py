@@ -30,6 +30,9 @@ class ZteSensorDescription(SensorEntityDescription):
 
 
 SENSORS = (
+    ZteSensorDescription(
+        key="modem_main_state", translation_key="modem_state", icon="mdi:router-wireless"
+    ),
     ZteSensorDescription(key="network_type", name="Network type"),
     ZteSensorDescription(key="network_provider", name="Network operator"),
     ZteSensorDescription(key="pin_status", name="SIM status"),
@@ -65,6 +68,21 @@ SENSORS = (
         for key, name in (
             ("realtime_rx_bytes", "Session received"),
             ("realtime_tx_bytes", "Session sent"),
+        )
+    ),
+    *(
+        ZteSensorDescription(
+            key=key,
+            translation_key=translation_key,
+            numeric=True,
+            minimum=0,
+            device_class=SensorDeviceClass.DATA_SIZE,
+            native_unit_of_measurement=UnitOfInformation.BYTES,
+            state_class=SensorStateClass.TOTAL_INCREASING,
+        )
+        for key, translation_key in (
+            ("monthly_rx_bytes", "monthly_received"),
+            ("monthly_tx_bytes", "monthly_sent"),
         )
     ),
     *(

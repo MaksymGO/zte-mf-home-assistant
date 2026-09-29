@@ -2,11 +2,25 @@
   "title": "ZTE MF",
   "entity": {
     "sensor": {
+      "modem_state": {
+        "name": "Modem state"
+      },
       "network_name": {
         "name": "Network Name (SSID)"
       },
       "wifi_connected_devices": {
         "name": "Connected Wi-Fi devices"
+      },
+      "monthly_received": {
+        "name": "Monthly received"
+      },
+      "monthly_sent": {
+        "name": "Monthly sent"
+      }
+    },
+    "binary_sensor": {
+      "roaming_allowed": {
+        "name": "Roaming allowed"
       }
     },
     "switch": {
@@ -20,6 +34,9 @@
     "button": {
       "shutdown": {
         "name": "Shutdown"
+      },
+      "reboot": {
+        "name": "Reboot"
       }
     }
   },

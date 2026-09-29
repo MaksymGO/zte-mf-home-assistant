@@ -2,11 +2,25 @@
   "title": "ZTE MF",
   "entity": {
     "sensor": {
+      "modem_state": {
+        "name": "Стан модема"
+      },
       "network_name": {
         "name": "Назва мережі (SSID)"
       },
       "wifi_connected_devices": {
         "name": "Пристрої, підключені до Wi-Fi"
+      },
+      "monthly_received": {
+        "name": "Отримано за місяць"
+      },
+      "monthly_sent": {
+        "name": "Надіслано за місяць"
+      }
+    },
+    "binary_sensor": {
+      "roaming_allowed": {
+        "name": "Дозвіл на роумінг"
       }
     },
     "switch": {
@@ -20,6 +34,9 @@
     "button": {
       "shutdown": {
         "name": "Вимкнути модем"
+      },
+      "reboot": {
+        "name": "Перезавантажити модем"
       }
     }
   },

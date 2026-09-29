@@ -20,11 +20,17 @@ SENSORS = (
         device_class=BinarySensorDeviceClass.BATTERY_CHARGING,
     ),
     BinarySensorEntityDescription(key="simcard_roam", name="Roaming", icon="mdi:earth"),
+    BinarySensorEntityDescription(
+        key="roam_setting_option",
+        translation_key="roaming_allowed",
+        icon="mdi:earth",
+    ),
 )
 STATES = {
     "ppp_status": {"ppp_connected": True, "ppp_disconnected": False},
     "battery_charging": {"1": True, "0": False},
     "simcard_roam": {"R": True, "N": False},
+    "roam_setting_option": {"on": True, "off": False},
 }
 
 
