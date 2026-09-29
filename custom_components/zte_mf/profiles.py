@@ -12,6 +12,7 @@ class FirmwareProfile:
     get_path: str = "/goform/goform_get_cmd_process"
     set_path: str = "/goform/goform_set_cmd_process"
     login_command: str = "LOGIN"
+    shutdown_command: str = "SHUTDOWN_DEVICE"
     password_encoding: str = "base64"
     commands: tuple[str, ...] = (
         "loginfo",

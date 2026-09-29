@@ -1,5 +1,12 @@
 {
   "title": "ZTE MF",
+  "entity": {
+    "button": {
+      "shutdown": {
+        "name": "Вимкнути модем"
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
