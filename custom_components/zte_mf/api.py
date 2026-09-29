@@ -126,6 +126,31 @@ class ZteClient:
         if status.get("loginfo") != "ok":
             await self._login()
 
+    async def _async_get_ad(self) -> str:
+        """Build the per-request authorization digest used by this firmware."""
+        assert self.profile is not None
+        version_data = await self._get(("wa_inner_version", "cr_version"))
+        rd_data = await self._request(
+            "GET",
+            self.profile.get_path,
+            {"isTest": "false", "cmd": "RD", "_": str(int(time.time() * 1000))},
+        )
+        version = version_data.get("wa_inner_version")
+        cr_version = version_data.get("cr_version")
+        random_data = rd_data.get("RD")
+        if (
+            not isinstance(version, str)
+            or not version
+            or not isinstance(cr_version, str)
+            or not isinstance(random_data, str)
+            or not random_data
+        ):
+            raise CannotConnect
+        return hashlib.md5(
+            hashlib.md5(f"{version}{cr_version}".encode()).hexdigest().encode()
+            + random_data.encode()
+        ).hexdigest()
+
     async def async_update(self) -> dict:
         """Recover one expired session; never repeatedly retry bad credentials."""
         async with self._lock:
@@ -181,27 +206,7 @@ class ZteClient:
         async with self._lock:
             await self._async_ensure_login()
             assert self.profile is not None
-            version_data = await self._get(("wa_inner_version", "cr_version"))
-            rd_data = await self._request(
-                "GET",
-                self.profile.get_path,
-                {"isTest": "false", "cmd": "RD", "_": str(int(time.time() * 1000))},
-            )
-            version = version_data.get("wa_inner_version")
-            cr_version = version_data.get("cr_version")
-            random_data = rd_data.get("RD")
-            if (
-                not isinstance(version, str)
-                or not version
-                or not isinstance(cr_version, str)
-                or not isinstance(random_data, str)
-                or not random_data
-            ):
-                raise CannotConnect
-            ad = hashlib.md5(
-                hashlib.md5(f"{version}{cr_version}".encode()).hexdigest().encode()
-                + random_data.encode()
-            ).hexdigest()
+            ad = await self._async_get_ad()
             result = await self._request(
                 "POST",
                 self.profile.set_path,
@@ -219,15 +224,33 @@ class ZteClient:
         async with self._lock:
             await self._async_ensure_login()
             assert self.profile is not None
-            return await self._request(
+            ad = await self._async_get_ad()
+            data = {
+                "isTest": "false",
+                "goformId": self.profile.wifi_switch_command,
+                "wifiEnabled": "1" if enabled else "0",
+                "AD": ad,
+            }
+            if enabled:
+                secondary_wifi = await self._get(("m_ssid_enable",))
+                secondary_enabled = secondary_wifi.get("m_ssid_enable")
+                if secondary_enabled in ("0", "1"):
+                    data["m_ssid_enable"] = secondary_enabled
+            result = await self._request(
                 "POST",
                 self.profile.set_path,
-                {
-                    "isTest": "false",
-                    "goformId": self.profile.wifi_switch_command,
-                    "wifiEnabled": "1" if enabled else "0",
-                },
+                data,
             )
+            if str(result.get("result")) not in ("success", "0", "4"):
+                raise CannotConnect
+            expected = "0" if enabled else "1"
+            for attempt in range(20):
+                status = await self._get(("RadioOff",))
+                if status.get("RadioOff") == expected:
+                    return status
+                if attempt < 19:
+                    await asyncio.sleep(0.5)
+            raise CannotConnect
 
     async def async_set_lte(self, enabled: bool) -> dict:
         """Connect or disconnect mobile data and wait for the modem's status."""
@@ -237,27 +260,7 @@ class ZteClient:
             command = (
                 self.profile.lte_connect_command if enabled else self.profile.lte_disconnect_command
             )
-            ad_data = await self._get(("wa_inner_version", "cr_version"))
-            rd_data = await self._request(
-                "GET",
-                self.profile.get_path,
-                {"isTest": "false", "cmd": "RD", "_": str(int(time.time() * 1000))},
-            )
-            version = ad_data.get("wa_inner_version")
-            cr_version = ad_data.get("cr_version")
-            random_data = rd_data.get("RD")
-            if (
-                not isinstance(version, str)
-                or not version
-                or not isinstance(cr_version, str)
-                or not isinstance(random_data, str)
-                or not random_data
-            ):
-                raise CannotConnect
-            ad = hashlib.md5(
-                hashlib.md5(f"{version}{cr_version}".encode()).hexdigest().encode()
-                + random_data.encode()
-            ).hexdigest()
+            ad = await self._async_get_ad()
             result = await self._request(
                 "POST",
                 self.profile.set_path,
