@@ -27,7 +27,6 @@ async def test_setup_and_unload(hass, update):
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
     assert hass.states.get("sensor.zte_mf920u_battery").state == "75.0"
-    assert hass.states.get("sensor.zte_mf920u_lte_rsrp").state == "-95.0"
     assert hass.states.get("binary_sensor.zte_mf920u_mobile_connection").state == "on"
     session = entry.runtime_data.client.session
     assert await hass.config_entries.async_unload(entry.entry_id)
@@ -109,12 +108,12 @@ def test_missing_and_invalid_sensor_values():
     from custom_components.zte_mf.sensor import SENSORS, sensor_value
 
     battery = next(item for item in SENSORS if item.key == "battery_vol_percent")
-    rsrp = next(item for item in SENSORS if item.key == "lte_rsrp")
+    assert not {"imei", "imsi", "wan_ipaddr", "rssi", "rscp", "lte_rsrp"} & {
+        item.key for item in SENSORS
+    }
     for value in (None, "", "--", "N/A", "nan", "999", "-1"):
         assert sensor_value(value, battery) is None
     assert sensor_value("0", battery) == 0
-    assert sensor_value("-95 dBm", rsrp) == -95
-    assert sensor_value("0", rsrp) is None
 
 
 async def test_connection_loss_and_recovery(hass, update, modem_data):

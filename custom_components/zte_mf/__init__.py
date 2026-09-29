@@ -6,7 +6,7 @@ from homeassistant.core import HomeAssistant
 
 from .coordinator import ZteCoordinator
 
-PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.BUTTON]
+PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.BUTTON, Platform.SWITCH]
 type ZteConfigEntry = ConfigEntry[ZteCoordinator]
 
 

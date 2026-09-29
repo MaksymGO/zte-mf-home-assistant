@@ -12,7 +12,6 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import (
     PERCENTAGE,
-    SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     UnitOfDataRate,
     UnitOfInformation,
     UnitOfTime,
@@ -35,7 +34,15 @@ SENSORS = (
     ZteSensorDescription(key="network_provider", name="Network operator"),
     ZteSensorDescription(key="pin_status", name="SIM status"),
     ZteSensorDescription(
-        key="signalbar", name="Signal bars", numeric=True, minimum=0, maximum=5, icon="mdi:signal"
+        key="SSID1", translation_key="network_name", icon="mdi:wifi"
+    ),
+    ZteSensorDescription(
+        key="wifi_connected_devices_count",
+        translation_key="wifi_connected_devices",
+        numeric=True,
+        minimum=0,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:account-multiple",
     ),
     ZteSensorDescription(
         key="battery_vol_percent",
@@ -46,19 +53,6 @@ SENSORS = (
         device_class=SensorDeviceClass.BATTERY,
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-    ),
-    *(
-        ZteSensorDescription(
-            key=key,
-            name=name,
-            numeric=True,
-            minimum=-150,
-            maximum=-1,
-            device_class=SensorDeviceClass.SIGNAL_STRENGTH,
-            native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
-            state_class=SensorStateClass.MEASUREMENT,
-        )
-        for key, name in (("rssi", "RSSI"), ("rscp", "RSCP"), ("lte_rsrp", "LTE RSRP"))
     ),
     *(
         ZteSensorDescription(

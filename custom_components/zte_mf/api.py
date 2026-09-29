@@ -111,6 +111,15 @@ class ZteClient:
         if str(result.get("result")) not in ("0", "4"):
             raise InvalidAuth
 
+    async def _async_ensure_login(self) -> None:
+        """Restore an expired web-interface session before a control command."""
+        try:
+            status = await self._get(("loginfo",))
+        except InvalidAuth:
+            status = {}
+        if status.get("loginfo") != "ok":
+            await self._login()
+
     async def async_update(self) -> dict:
         """Recover one expired session; never repeatedly retry bad credentials."""
         async with self._lock:
@@ -144,23 +153,61 @@ class ZteClient:
                 for key in ("ppp_status", "network_type", "pin_status", "battery_vol_percent")
             ):
                 raise CannotConnect
+            stations = data.pop("station_list", None)
+            data["wifi_connected_devices_count"] = (
+                len(stations) if isinstance(stations, list) else None
+            )
             return data
 
     async def async_shutdown(self) -> None:
         """Request the same shutdown action as the modem's web interface."""
         async with self._lock:
-            try:
-                status = await self._get(("loginfo",))
-            except InvalidAuth:
-                status = {}
-            if status.get("loginfo") != "ok":
-                await self._login()
+            await self._async_ensure_login()
             assert self.profile is not None
             await self._request(
                 "POST",
                 self.profile.set_path,
                 {"isTest": "false", "goformId": self.profile.shutdown_command},
             )
+
+    async def async_set_wifi(self, enabled: bool) -> dict:
+        """Enable or disable the Wi-Fi radio using the modem web UI command."""
+        async with self._lock:
+            await self._async_ensure_login()
+            assert self.profile is not None
+            return await self._request(
+                "POST",
+                self.profile.set_path,
+                {
+                    "isTest": "false",
+                    "goformId": self.profile.wifi_switch_command,
+                    "wifiEnabled": "1" if enabled else "0",
+                },
+            )
+
+    async def async_set_lte(self, enabled: bool) -> dict:
+        """Connect or disconnect mobile data and wait for the modem's status."""
+        async with self._lock:
+            await self._async_ensure_login()
+            assert self.profile is not None
+            command = (
+                self.profile.lte_connect_command
+                if enabled
+                else self.profile.lte_disconnect_command
+            )
+            result = await self._request(
+                "POST", self.profile.set_path, {"isTest": "false", "goformId": command}
+            )
+            if str(result.get("result")) not in ("success", "0", "4"):
+                raise CannotConnect
+            expected = "ppp_connected" if enabled else "ppp_disconnected"
+            for attempt in range(20):
+                status = await self._get(("ppp_status",))
+                if status.get("ppp_status") == expected:
+                    return status
+                if attempt < 19:
+                    await asyncio.sleep(0.5)
+            raise CannotConnect
 
 
 def device_id(data: dict) -> str | None:
