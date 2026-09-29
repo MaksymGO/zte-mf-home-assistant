@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/MaksymGO/zte-mf-home-assistant/compare/v0.2.0...v0.3.0) (2026-09-29)
+
+
+### Features
+
+* add modem shutdown button ([2b16d21](https://github.com/MaksymGO/zte-mf-home-assistant/commit/2b16d2159a6888ae1ac5cd03eb03555089a851cf))
+* add modem shutdown button ([94cb534](https://github.com/MaksymGO/zte-mf-home-assistant/commit/94cb534732f397d26d636581461a3c81085b2011))
+
 ## [0.2.0](https://github.com/MaksymGO/zte-mf-home-assistant/compare/v0.1.0...v0.2.0) (2026-09-29)
 
 
