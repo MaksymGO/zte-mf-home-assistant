@@ -13,6 +13,7 @@ class FirmwareProfile:
     set_path: str = "/goform/goform_set_cmd_process"
     login_command: str = "LOGIN"
     shutdown_command: str = "SHUTDOWN_DEVICE"
+    reboot_command: str = "REBOOT_DEVICE"
     wifi_switch_command: str = "SET_WIFI_INFO"
     lte_connect_command: str = "CONNECT_NETWORK"
     lte_disconnect_command: str = "DISCONNECT_NETWORK"
@@ -36,6 +37,7 @@ class FirmwareProfile:
         "battery_vol_percent",
         "battery_charging",
         "simcard_roam",
+        "roam_setting_option",
         "pin_status",
         "rssi",
         "rscp",

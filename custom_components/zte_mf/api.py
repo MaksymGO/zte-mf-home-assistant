@@ -2,8 +2,10 @@
 
 import asyncio
 import base64
+import hashlib
 import ipaddress
 import re
+import time
 from urllib.parse import urlsplit
 
 import aiohttp
@@ -61,12 +63,16 @@ class ZteClient:
 
     async def _request(self, method: str, path: str, data: dict) -> dict:
         kwargs = {"params" if method == "GET" else "data": data}
+        headers = {
+            "Referer": self.base_url + "/index.html",
+            "Origin": self.base_url,
+        }
         try:
             async with self.session.request(
                 method,
                 self.base_url + path,
                 **kwargs,
-                headers={"Referer": self.base_url + "/index.html", "Origin": self.base_url},
+                headers=headers,
                 timeout=aiohttp.ClientTimeout(total=10),
                 allow_redirects=False,
             ) as response:
@@ -170,6 +176,44 @@ class ZteClient:
                 {"isTest": "false", "goformId": self.profile.shutdown_command},
             )
 
+    async def async_reboot(self) -> None:
+        """Request the modem reboot using the authenticated web UI command."""
+        async with self._lock:
+            await self._async_ensure_login()
+            assert self.profile is not None
+            version_data = await self._get(("wa_inner_version", "cr_version"))
+            rd_data = await self._request(
+                "GET",
+                self.profile.get_path,
+                {"isTest": "false", "cmd": "RD", "_": str(int(time.time() * 1000))},
+            )
+            version = version_data.get("wa_inner_version")
+            cr_version = version_data.get("cr_version")
+            random_data = rd_data.get("RD")
+            if (
+                not isinstance(version, str)
+                or not version
+                or not isinstance(cr_version, str)
+                or not isinstance(random_data, str)
+                or not random_data
+            ):
+                raise CannotConnect
+            ad = hashlib.md5(
+                hashlib.md5(f"{version}{cr_version}".encode()).hexdigest().encode()
+                + random_data.encode()
+            ).hexdigest()
+            result = await self._request(
+                "POST",
+                self.profile.set_path,
+                {
+                    "isTest": "false",
+                    "goformId": self.profile.reboot_command,
+                    "AD": ad,
+                },
+            )
+            if str(result.get("result")) not in ("success", "0", "4"):
+                raise CannotConnect
+
     async def async_set_wifi(self, enabled: bool) -> dict:
         """Enable or disable the Wi-Fi radio using the modem web UI command."""
         async with self._lock:
@@ -193,8 +237,36 @@ class ZteClient:
             command = (
                 self.profile.lte_connect_command if enabled else self.profile.lte_disconnect_command
             )
+            ad_data = await self._get(("wa_inner_version", "cr_version"))
+            rd_data = await self._request(
+                "GET",
+                self.profile.get_path,
+                {"isTest": "false", "cmd": "RD", "_": str(int(time.time() * 1000))},
+            )
+            version = ad_data.get("wa_inner_version")
+            cr_version = ad_data.get("cr_version")
+            random_data = rd_data.get("RD")
+            if (
+                not isinstance(version, str)
+                or not version
+                or not isinstance(cr_version, str)
+                or not isinstance(random_data, str)
+                or not random_data
+            ):
+                raise CannotConnect
+            ad = hashlib.md5(
+                hashlib.md5(f"{version}{cr_version}".encode()).hexdigest().encode()
+                + random_data.encode()
+            ).hexdigest()
             result = await self._request(
-                "POST", self.profile.set_path, {"isTest": "false", "goformId": command}
+                "POST",
+                self.profile.set_path,
+                {
+                    "isTest": "false",
+                    "notCallback": "true",
+                    "goformId": command,
+                    "AD": ad,
+                },
             )
             if str(result.get("result")) not in ("success", "0", "4"):
                 raise CannotConnect
