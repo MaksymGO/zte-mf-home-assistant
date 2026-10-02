@@ -179,3 +179,19 @@ async def test_reconfigure_keeps_password(hass, update):
     assert result["reason"] == "reconfigure_successful"
     assert entry.data["host"] == "http://192.168.0.2"
     assert entry.data["password"] == "test-password"
+
+
+@pytest.mark.parametrize(
+    "radio_off,expected",
+    [("0", False), ("1", True), ("2", None), ("", None), (None, None)],
+)
+def test_wifi_switch_reports_firmware_state(radio_off, expected):
+    from types import SimpleNamespace
+
+    from custom_components.zte_mf.switch import SWITCHES, ZteSwitch
+
+    switch = object.__new__(ZteSwitch)
+    switch.coordinator = SimpleNamespace(data={"RadioOff": radio_off})
+    switch.entity_description = SWITCHES[0]
+    switch._data_key = "RadioOff"
+    assert switch.is_on is expected

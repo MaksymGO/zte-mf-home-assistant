@@ -20,7 +20,7 @@ async def modem():
         "missing_status": False,
         "http_error": False,
         "ppp_status": "ppp_connected",
-        "radio_off": "1",
+        "radio_off": "0",
         "m_ssid_enable": "0",
     }
 
@@ -73,7 +73,7 @@ async def modem():
             state["ppp_status"] = "ppp_connected"
             result = web.json_response({"result": "success"})
         elif data["goformId"] == "SET_WIFI_INFO":
-            state["radio_off"] = "0" if data["wifiEnabled"] == "1" else "1"
+            state["radio_off"] = data["wifiEnabled"]
             result = web.json_response({"result": "success"})
         result.set_cookie("stok", "test-session")
         return result
@@ -132,7 +132,7 @@ async def test_wifi_switch_uses_firmware_ad(modem, enabled, secondary_enabled):
     state["m_ssid_enable"] = secondary_enabled
     await client.async_update()
     status = await client.async_set_wifi(enabled)
-    assert status["RadioOff"] == ("0" if enabled else "1")
+    assert status["RadioOff"] == ("1" if enabled else "0")
     post = next(item for item in state["posts"] if item["goformId"] == "SET_WIFI_INFO")
     inner_hash = hashlib.md5(VERSION.encode()).hexdigest()
     expected_ad = hashlib.md5(f"{inner_hash}random-data".encode()).hexdigest()
