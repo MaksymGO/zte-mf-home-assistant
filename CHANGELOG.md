@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.2](https://github.com/MaksymGO/zte-mf-home-assistant/compare/v0.5.1...v0.5.2) (2026-10-02)
+
+
+### Bug Fixes
+
+* correct MF920U Wi-Fi radio state ([57fc4dd](https://github.com/MaksymGO/zte-mf-home-assistant/commit/57fc4ddf4434a0a6987865f2c1cb6d2728a34c52))
+* correct MF920U Wi-Fi radio state ([e8a95b2](https://github.com/MaksymGO/zte-mf-home-assistant/commit/e8a95b2c53bebbc0ca4ce95c1066d64397011d1b))
+
 ## [0.5.1](https://github.com/MaksymGO/zte-mf-home-assistant/compare/v0.5.0...v0.5.1) (2026-09-29)
 
 
