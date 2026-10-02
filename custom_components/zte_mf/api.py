@@ -243,7 +243,8 @@ class ZteClient:
             )
             if str(result.get("result")) not in ("success", "0", "4"):
                 raise CannotConnect
-            expected = "0" if enabled else "1"
+            # Despite its name, RadioOff follows wifiEnabled on MF920U B10.
+            expected = "1" if enabled else "0"
             for attempt in range(20):
                 status = await self._get(("RadioOff",))
                 if status.get("RadioOff") == expected:

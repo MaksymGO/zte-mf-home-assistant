@@ -31,7 +31,8 @@ class ZteSwitch(ZteEntity, SwitchEntity):
     def is_on(self):
         value = self.coordinator.data.get(self._data_key)
         if self.entity_description.key == "wifi_switch":
-            return {"0": True, "1": False}.get(value)
+            # MF920U B10 reports 0 when disabled and 1 when enabled.
+            return {"0": False, "1": True}.get(value)
         return {
             "ppp_connected": True,
             "ppp_connecting": True,
@@ -48,8 +49,8 @@ class ZteSwitch(ZteEntity, SwitchEntity):
     async def _async_set_enabled(self, enabled: bool):
         """Send the device command and publish the acknowledged state."""
         if self.entity_description.key == "wifi_switch":
-            await self.coordinator.client.async_set_wifi(enabled)
-            state = {**self.coordinator.data, "RadioOff": "0" if enabled else "1"}
+            status = await self.coordinator.client.async_set_wifi(enabled)
+            state = {**self.coordinator.data, **status}
         else:
             status = await self.coordinator.client.async_set_lte(enabled)
             state = {**self.coordinator.data, **status}
